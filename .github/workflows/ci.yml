@@ -105,6 +105,8 @@ jobs:
         fi
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        # Set the correct context (koln-k3s is the available context)
+        kubectl config use-context koln-k3s
 
     - name: Update deployment image
       run: |
@@ -112,6 +114,8 @@ jobs:
           echo "Kubernetes config not available. Skipping deployment update."
           exit 0
         fi
+        # Verify kubectl is working
+        echo "Current context: $(kubectl config current-context)"
         # Use the correct namespace from deployment.yml
         kubectl set image deployment/egel-deployment egel=ghcr.io/${{ github.repository }}:${{ github.sha }} -n egel-nm
         kubectl rollout status deployment/egel-deployment -n egel-nm
