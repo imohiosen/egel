@@ -2,13 +2,13 @@
   "name": "egel",
   "version": "0.1.0",
   "private": true,
-    "engines": {
+  "engines": {
     "node": "20.x",
     "npm": "9.x"
   },
   "scripts": {
     "dev": "bun --bun next dev --turbopack",
-    "build": "bun --bun next build --turbopack",
+    "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "bun --bun eslint"
   },
@@ -41,5 +41,8 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "lightningcss": "^1.30.1"
   }
 }

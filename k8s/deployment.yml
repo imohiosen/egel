@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: egel
-        image: egel:latest
+        image: ghcr.io/imohiosen/egel:latest
         ports:
         - containerPort: 3000
         envFrom:

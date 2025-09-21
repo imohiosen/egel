@@ -79,7 +79,7 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.actor != 'nektos/act'
     name: Deploy to Kubernetes
 
     steps:
@@ -93,15 +93,29 @@ jobs:
 
     - name: Configure kubectl
       run: |
+        if [ -z "${{ secrets.KUBECONFIG }}" ]; then
+          echo "KUBECONFIG secret not found. Skipping Kubernetes deployment."
+          echo "This is expected when running in local act environment."
+          exit 0
+        fi
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
 
     - name: Update deployment image
       run: |
-        kubectl set image deployment/egel-deployment egel=ghcr.io/${{ github.repository_owner }}/egel:${{ github.sha }} -n default
-        kubectl rollout status deployment/egel-deployment -n default
+        if [ ! -f "$HOME/.kube/config" ]; then
+          echo "Kubernetes config not available. Skipping deployment update."
+          exit 0
+        fi
+        # Use the correct namespace from deployment.yml
+        kubectl set image deployment/egel-deployment egel=ghcr.io/${{ github.repository_owner }}/egel:${{ github.sha }} -n egel-nm
+        kubectl rollout status deployment/egel-deployment -n egel-nm
 
     - name: Verify deployment
       run: |
-        kubectl get pods -n default
-        kubectl get services -n default
+        if [ ! -f "$HOME/.kube/config" ]; then
+          echo "Kubernetes config not available. Skipping deployment verification."
+          exit 0
+        fi
+        kubectl get pods -n egel-nm
+        kubectl get services -n egel-nm

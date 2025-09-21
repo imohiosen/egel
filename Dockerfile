@@ -1,5 +1,5 @@
 # Use TypeScript Node official image as base
-FROM mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm as base
+FROM mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm AS base
 WORKDIR /app
 
 # Install Bun
