@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: egel-config
-  namespace: default
+  namespace: egel-nm
   labels:
     app: egel
 data:

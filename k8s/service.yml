@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: egel-service
-  namespace: default
+  namespace: egel-nm
   labels:
     app: egel
 spec:
