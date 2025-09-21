@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     name: Build and Push Docker Image
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - name: Checkout code
@@ -58,7 +61,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ github.repository_owner }}/egel
+        images: ghcr.io/${{ github.repository }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -81,6 +84,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.actor != 'nektos/act'
     name: Deploy to Kubernetes
+    permissions:
+      contents: read
 
     steps:
     - name: Checkout code
@@ -108,7 +113,7 @@ jobs:
           exit 0
         fi
         # Use the correct namespace from deployment.yml
-        kubectl set image deployment/egel-deployment egel=ghcr.io/${{ github.repository_owner }}/egel:${{ github.sha }} -n egel-nm
+        kubectl set image deployment/egel-deployment egel=ghcr.io/${{ github.repository }}:${{ github.sha }} -n egel-nm
         kubectl rollout status deployment/egel-deployment -n egel-nm
 
     - name: Verify deployment
