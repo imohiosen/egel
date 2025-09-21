@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: egel-ingress
+  namespace: default
+  labels:
+    app: egel
+  annotations:
+    # Use nginx ingress controller
+    kubernetes.io/ingress.class: "nginx"
+    # Optional: SSL redirect
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Optional: Certificate manager for HTTPS
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: egel.local  # Change this to your domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: egel-service
+            port:
+              number: 80
+  # Optional: TLS configuration
+  # tls:
+  # - hosts:
+  #   - egel.local
+  #   secretName: egel-tls

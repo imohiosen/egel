@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: egel-service
+  namespace: default
+  labels:
+    app: egel
+spec:
+  selector:
+    app: egel
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: ClusterIP

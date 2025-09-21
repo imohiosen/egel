@@ -1,14 +1,13 @@
-curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.35.1/pack-v0.35.1-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
 
-# install a specific Node.js version (example: 20.11.1)
-nvm install 20.11.1
+# # install a specific Node.js version (example: 20.11.1)
+# nvm install 20.11.1
 
-# switch to that version
-nvm use 20.11.1
+# # switch to that version
+# nvm use 20.11.1
 
-# set it as default
-nvm alias default 20.11.1
-node -e "console.log('Node.js ' + process.version + ' installed and set as default')"
+# # set it as default
+# nvm alias default 20.11.1
+# node -e "console.log('Node.js ' + process.version + ' installed and set as default')"
 
 # Setup persistent bash history for root user
 # Create a persistent directory in the workspace for bash history

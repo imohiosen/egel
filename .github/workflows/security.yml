@@ -1,0 +1,87 @@
+name: Security and Dependencies
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    name: Security Audit
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Install dependencies
+      run: bun install
+
+    - name: Run security audit
+      run: bun audit
+      continue-on-error: true
+
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript,typescript
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    name: Dependency Check
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Check for outdated dependencies
+      run: |
+        bun update --dry-run > dependency-report.txt || true
+        cat dependency-report.txt
+
+    - name: Create issue for outdated dependencies
+      if: github.event_name == 'schedule'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let report = '';
+          try {
+            report = fs.readFileSync('dependency-report.txt', 'utf8');
+          } catch (error) {
+            console.log('No dependency report found');
+            return;
+          }
+          
+          if (report.trim() && !report.includes('All dependencies are up to date')) {
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'dependencies',
+              state: 'open'
+            });
+            
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Outdated Dependencies Report',
+                body: `## Dependency Update Report\n\nThe following dependencies may need updates:\n\n\`\`\`\n${report}\n\`\`\`\n\nThis issue was automatically created by the Security and Dependencies workflow.`,
+                labels: ['dependencies', 'automated']
+              });
+            }
+          }

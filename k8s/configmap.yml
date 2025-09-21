@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: egel-config
+  namespace: default
+  labels:
+    app: egel
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  # Add any other environment variables your Next.js app needs
+  # For example:
+  # DATABASE_URL: "your-database-url"
+  # API_URL: "your-api-url"

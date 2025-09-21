@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: egel-deployment
+  namespace: default
+  labels:
+    app: egel
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: egel
+  template:
+    metadata:
+      labels:
+        app: egel
+    spec:
+      containers:
+      - name: egel
+        image: egel:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: egel-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        # Optional: Add volume mounts if needed
+        # volumeMounts:
+        # - name: config-volume
+        #   mountPath: /app/config
+      # Optional: Add volumes if needed
+      # volumes:
+      # - name: config-volume
+      #   configMap:
+      #     name: egel-config
